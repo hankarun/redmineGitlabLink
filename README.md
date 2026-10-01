@@ -163,17 +163,17 @@ A Task Scheduler alternative that needs no extra tools is below.
 3. Install the service, pointing it at `waitress-serve` inside the venv:
 
    ```powershell
-   nssm install RedmineBot "C:\redmine-bot\venv\Scripts\waitress-serve.exe" --host=0.0.0.0 --port=8000 app:app
-   nssm set RedmineBot AppDirectory C:\redmine-bot
+   nssm install RedmineBot "E:\redmineGitlabLink\venv\Scripts\waitress-serve.exe" --host=0.0.0.0 --port=8000 app:app
+   nssm set RedmineBot AppDirectory E:\redmineGitlabLink
    nssm set RedmineBot Start SERVICE_AUTO_START
-   nssm set RedmineBot AppStdout C:\redmine-bot\logs\service.log
-   nssm set RedmineBot AppStderr C:\redmine-bot\logs\service.log
+   nssm set RedmineBot AppStdout E:\redmineGitlabLink\logs\service.log
+   nssm set RedmineBot AppStderr E:\redmineGitlabLink\logs\service.log
    nssm set RedmineBot AppRotateFiles 1
    ```
 
    `AppDirectory` matters: it's what makes the process pick up `.env` and
    resolve the (relative, by default) sqlite `DB_PATH`. Create the `logs`
-   folder first (`mkdir C:\redmine-bot\logs`).
+   folder first (`mkdir E:\redmineGitlabLink\logs`).
 
    If the Claude CLI needs a specific PATH or a user profile to find its
    login (e.g. it's signed in under a particular Windows account), either run
@@ -199,11 +199,11 @@ A Task Scheduler alternative that needs no extra tools is below.
 Less robust than a real service (e.g. it runs in a user session rather than
 as a system service), but works with nothing but what Windows ships.
 
-1. Create `C:\redmine-bot\run.bat`:
+1. Create `E:\redmineGitlabLink\run.bat`:
 
    ```bat
    @echo off
-   cd /d C:\redmine-bot
+   cd /d E:\redmineGitlabLink
    venv\Scripts\waitress-serve.exe --host=0.0.0.0 --port=8000 app:app
    ```
 
@@ -211,7 +211,7 @@ as a system service), but works with nothing but what Windows ships.
    - **General**: name it `RedmineBot`; "Run whether user is logged on or
      not"; "Run with highest privileges".
    - **Triggers**: New → "At startup".
-   - **Actions**: New → Start a program → `C:\redmine-bot\run.bat`.
+   - **Actions**: New → Start a program → `E:\redmineGitlabLink\run.bat`.
    - **Settings**: tick "Restart the task if it fails" (e.g. every 1 minute,
      up to 3 times), and untick "Stop the task if it runs longer than..." —
      it's meant to run indefinitely.
