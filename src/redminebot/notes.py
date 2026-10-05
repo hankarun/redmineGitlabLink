@@ -10,6 +10,9 @@ from __future__ import annotations
 import re
 
 DEFAULT_PATTERN = r"(?<![\w&])#(\d+)\b"
+# After a match, further "#N" joined by commas, "&" or "and" belong to the same
+# reference, so "Fixes #1, #2 and #3" works with keyword patterns too.
+LIST_CONTINUATION = re.compile(r"\s*(?:,|&|\band\b)?\s*#(\d+)\b", re.IGNORECASE)
 DEFAULT_TEMPLATE = (
     "Referenced in commit {short_sha} ({project}, branch {branch})\n"
     "{url}\n\n"
@@ -32,7 +35,15 @@ class IssueReferenceExtractor:
         self.pattern = pattern or DEFAULT_PATTERN
 
     def extract(self, message: str) -> list[int]:
-        return [int(n) for n in re.findall(self.pattern, message or "")]
+        message = message or ""
+        found: dict[int, None] = {}  # ordered set
+        for match in re.finditer(self.pattern, message, re.IGNORECASE):
+            found[int(match.group(1))] = None
+            pos = match.end()
+            while follow := LIST_CONTINUATION.match(message, pos):
+                found[int(follow.group(1))] = None
+                pos = follow.end()
+        return list(found)
 
     def error(self) -> str | None:
         """Why this pattern is unusable, or None when it is fine."""
